@@ -134,6 +134,115 @@ api.interceptors.response.use(
 
 ---
 
+## Cómo probar los endpoints
+
+### Postman
+
+1. Haz `POST http://localhost:3000/auth/login` con el body:
+
+```json
+{
+  "email": "juan@usac.edu",
+  "password": "mipassword123"
+}
+```
+
+2. Las cookies se guardan automáticamente en la pestaña **Cookies**
+3. Ya puedes llamar cualquier ruta protegida sin hacer nada extra
+
+Asegúrate de tener habilitado:
+
+```
+Settings → General → Automatically follow redirects ✅
+```
+
+---
+
+### Thunder Client (VS Code)
+
+El flujo es exactamente igual a Postman. Verifica que esté habilitado:
+
+```
+Menú de Thunder Client → Settings →
+✅ Follow Redirects
+✅ Save Cookies
+```
+
+---
+
+### Orden recomendado para probar
+
+Antes de probar rutas protegidas necesitas datos en la base de datos. Sigue este orden:
+
+**1. Registrar un usuario:**
+
+```
+POST /auth/register
+```
+
+```json
+{
+  "registroAcademico": "202012345",
+  "nombres": "Juan",
+  "apellidos": "Pérez",
+  "email": "juan@usac.edu",
+  "password": "mipassword123"
+}
+```
+
+**2. Crear un curso:**
+
+```
+POST /courses
+```
+
+```json
+{
+  "nombre": "Matemática 1",
+  "creditos": 5
+}
+```
+
+**3. Crear un catedrático:**
+
+```
+POST /professors
+```
+
+```json
+{
+  "nombres": "Carlos",
+  "apellidos": "García"
+}
+```
+
+**4. Crear una publicación:**
+
+```
+POST /posts
+```
+
+```json
+{
+  "mensaje": "Este curso está muy bueno",
+  "courseId": 1
+}
+```
+
+**5. Comentar la publicación:**
+
+```
+POST /posts/1/comments
+```
+
+```json
+{
+  "mensaje": "Totalmente de acuerdo"
+}
+```
+
+---
+
 ## Endpoints
 
 ### Autenticación
@@ -593,115 +702,6 @@ Cuando se mandan datos incorrectos, el mensaje puede ser un array:
     "La contraseña debe tener mínimo 8 caracteres"
   ],
   "error": "Bad Request"
-}
-```
-
----
-
-## Cómo probar los endpoints
-
-### Postman
-
-1. Haz `POST http://localhost:3000/auth/login` con el body:
-
-```json
-{
-  "email": "juan@usac.edu",
-  "password": "mipassword123"
-}
-```
-
-2. Las cookies se guardan automáticamente en la pestaña **Cookies**
-3. Ya puedes llamar cualquier ruta protegida sin hacer nada extra
-
-Asegúrate de tener habilitado:
-
-```
-Settings → General → Automatically follow redirects ✅
-```
-
----
-
-### Thunder Client (VS Code)
-
-El flujo es exactamente igual a Postman. Verifica que esté habilitado:
-
-```
-Menú de Thunder Client → Settings →
-✅ Follow Redirects
-✅ Save Cookies
-```
-
----
-
-### Orden recomendado para probar
-
-Antes de probar rutas protegidas necesitas datos en la base de datos. Sigue este orden:
-
-**1. Registrar un usuario:**
-
-```
-POST /auth/register
-```
-
-```json
-{
-  "registroAcademico": "202012345",
-  "nombres": "Juan",
-  "apellidos": "Pérez",
-  "email": "juan@usac.edu",
-  "password": "mipassword123"
-}
-```
-
-**2. Crear un curso:**
-
-```
-POST /courses
-```
-
-```json
-{
-  "nombre": "Matemática 1",
-  "creditos": 5
-}
-```
-
-**3. Crear un catedrático:**
-
-```
-POST /professors
-```
-
-```json
-{
-  "nombres": "Carlos",
-  "apellidos": "García"
-}
-```
-
-**4. Crear una publicación:**
-
-```
-POST /posts
-```
-
-```json
-{
-  "mensaje": "Este curso está muy bueno",
-  "courseId": 1
-}
-```
-
-**5. Comentar la publicación:**
-
-```
-POST /posts/1/comments
-```
-
-```json
-{
-  "mensaje": "Totalmente de acuerdo"
 }
 ```
 
