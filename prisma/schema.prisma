@@ -1,0 +1,90 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model User {
+  id                Int      @id @default(autoincrement())
+  registroAcademico String   @unique
+  nombres           String
+  apellidos         String
+  password          String
+  email             String   @unique
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  refreshToken      String?  @db.Text
+
+  posts           Post[]
+  comments        Comment[]
+  approvedCourses ApprovedCourse[]
+}
+
+model Course {
+  id       Int    @id @default(autoincrement())
+  nombre   String
+  creditos Int
+
+  posts      Post[]
+  approvedBy ApprovedCourse[]
+}
+
+model Professor {
+  id        Int    @id @default(autoincrement())
+  nombres   String
+  apellidos String
+
+  posts Post[]
+}
+
+model Post {
+  id        Int      @id @default(autoincrement())
+  mensaje   String   @db.Text
+  createdAt DateTime @default(now())
+
+  // Autor de la publicación
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  // La publicación es sobre un curso O un catedrático (uno de los dos)
+  courseId Int?
+  course   Course? @relation(fields: [courseId], references: [id])
+
+  professorId Int?
+  professor   Professor? @relation(fields: [professorId], references: [id])
+
+  comments Comment[]
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  mensaje   String   @db.Text
+  createdAt DateTime @default(now())
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  postId Int
+  post   Post @relation(fields: [postId], references: [id])
+}
+
+model ApprovedCourse {
+  id Int @id @default(autoincrement())
+
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  courseId Int
+  course   Course @relation(fields: [courseId], references: [id])
+
+  @@unique([userId, courseId]) // Un usuario no puede aprobar el mismo curso dos veces
+}
