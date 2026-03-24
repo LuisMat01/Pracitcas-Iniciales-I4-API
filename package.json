@@ -26,7 +26,7 @@
     "@nestjs/mapped-types": "*",
     "@nestjs/passport": "^11.0.5",
     "@nestjs/platform-express": "^11.0.1",
-    "@prisma/adapter-planetscale": "^7.5.0",
+    "@prisma/adapter-mariadb": "^7.5.0",
     "@prisma/client": "^7.5.0",
     "@prisma/config": "^7.5.0",
     "bcrypt": "^6.0.0",
