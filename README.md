@@ -1,98 +1,624 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Social USAC — API Backend
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+Backend desarrollado con **NestJS + Prisma + MySQL**. Documentación para el equipo de frontend.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## Requisitos previos
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- Docker Desktop instalado y corriendo
+- Node.js 18+
 
-## Project setup
+## Levantar el proyecto
 
 ```bash
-$ npm install
+# 1. Levantar la base de datos
+docker-compose up -d
+
+# 2. Instalar dependencias
+npm install
+
+# 3. Correr migraciones
+npx prisma migrate dev
+
+# 4. Iniciar el servidor
+npm run start:dev
 ```
 
-## Compile and run the project
+El servidor corre en: `http://localhost:3000`
 
-```bash
-# development
-$ npm run start
+---
 
-# watch mode
-$ npm run start:dev
+## Configuración del Frontend
 
-# production mode
-$ npm run start:prod
+### Regla de oro
+
+Cada request que haga el frontend **debe incluir `credentials: 'include'`** (fetch) o **`withCredentials: true`** (axios). Sin esto las cookies no se mandan y el usuario aparecerá como no autenticado.
+
+### Configuración con Axios (recomendado)
+
+Crea un archivo `api.ts` o `api.js` y configúralo una sola vez:
+
+```ts
+import axios from 'axios';
+
+const api = axios.create({
+  baseURL: 'http://localhost:3000',
+  withCredentials: true, // SIEMPRE incluir esto
+});
+
+export default api;
 ```
 
-## Run tests
+Luego úsalo en toda la app:
 
-```bash
-# unit tests
-$ npm run test
+```ts
+// Login
+await api.post('/auth/login', { email, password });
 
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+// Obtener publicaciones
+await api.get('/posts');
 ```
 
-## Deployment
+### Configuración con Fetch
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+Si usas fetch nativo, agrega `credentials: 'include'` en cada request:
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
-
-```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+```ts
+fetch('http://localhost:3000/auth/login', {
+  method: 'POST',
+  credentials: 'include',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({ email, password }),
+});
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+---
 
-## Resources
+## Cómo funciona la autenticación
 
-Check out a few resources that may come in handy when working with NestJS:
+El backend usa **HTTP-only cookies**. Esto significa que:
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+- El frontend **NO** necesita guardar tokens en localStorage ni en memoria
+- El frontend **NO** necesita leer ni manejar tokens
+- El frontend **NO** necesita agregar headers de autorización
+- Las cookies se mandan y reciben **automáticamente** por el navegador
 
-## Support
+El único requisito es `credentials: 'include'` / `withCredentials: true`.
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### Flujo de autenticación
 
-## Stay in touch
+```
+1. Usuario hace login
+   → Backend crea las cookies automáticamente en el navegador
+   → accessToken  (dura 15 minutos)
+   → refreshToken (dura 7 días)
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+2. Usuario hace requests
+   → El navegador manda las cookies solo en cada request
+   → El backend valida el accessToken
 
-## License
+3. accessToken expira (15 min)
+   → El frontend llama a POST /auth/refresh
+   → El backend genera nuevas cookies automáticamente
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+4. Usuario hace logout
+   → El frontend llama a POST /auth/logout
+   → El backend borra las cookies
+```
+
+### Manejo del token expirado (401)
+
+Cuando el accessToken expira el backend devuelve un error `401`. El frontend debe interceptarlo y llamar al endpoint de refresh:
+
+```ts
+// Interceptor de Axios para manejar tokens expirados
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    if (error.response?.status === 401) {
+      try {
+        // Intenta renovar el token
+        await api.post('/auth/refresh');
+        // Reintenta el request original
+        return api(error.config);
+      } catch {
+        // Si el refresh también falla, manda al login
+        window.location.href = '/login';
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+```
+
+---
+
+## Endpoints
+
+### Autenticación
+
+#### POST `/auth/register`
+Registrar un nuevo usuario.
+
+**Body:**
+```json
+{
+  "registroAcademico": "202012345",
+  "nombres": "Juan",
+  "apellidos": "Pérez",
+  "email": "juan@usac.edu",
+  "password": "mipassword123"
+}
+```
+
+**Respuesta exitosa (200):**
+```json
+{ "message": "Autenticación exitosa" }
+```
+
+---
+
+#### POST `/auth/login`
+Iniciar sesión.
+
+**Body:**
+```json
+{
+  "email": "juan@usac.edu",
+  "password": "mipassword123"
+}
+```
+
+**Respuesta exitosa (200):**
+```json
+{ "message": "Autenticación exitosa" }
+```
+
+---
+
+#### POST `/auth/logout`
+Cerrar sesión. Requiere estar autenticado.
+
+**Body:** ninguno
+
+**Respuesta exitosa (200):**
+```json
+{ "message": "Sesión cerrada correctamente" }
+```
+
+---
+
+#### POST `/auth/refresh`
+Renovar el accessToken cuando expira.
+
+**Body:** ninguno
+
+**Respuesta exitosa (200):**
+```json
+{ "message": "Autenticación exitosa" }
+```
+
+---
+
+#### POST `/auth/reset-password`
+Restablecer contraseña olvidada.
+
+**Body:**
+```json
+{
+  "registroAcademico": "202012345",
+  "email": "juan@usac.edu",
+  "newPassword": "nuevapassword123"
+}
+```
+
+**Respuesta exitosa (200):**
+```json
+{ "message": "Contraseña actualizada correctamente" }
+```
+
+---
+
+### Usuarios
+
+> Todos los endpoints de usuarios requieren estar autenticado.
+
+#### GET `/users/me`
+Ver mi perfil.
+
+**Respuesta exitosa (200):**
+```json
+{
+  "id": 1,
+  "registroAcademico": "202012345",
+  "nombres": "Juan",
+  "apellidos": "Pérez",
+  "email": "juan@usac.edu",
+  "createdAt": "2024-01-01T00:00:00.000Z",
+  "approvedCourses": [
+    {
+      "course": {
+        "id": 1,
+        "nombre": "Matemática 1",
+        "creditos": 5
+      }
+    }
+  ]
+}
+```
+
+---
+
+#### PUT `/users/me`
+Editar mi perfil. Todos los campos son opcionales. No se puede cambiar el `registroAcademico`.
+
+**Body:**
+```json
+{
+  "nombres": "Juan Carlos",
+  "apellidos": "Pérez López",
+  "email": "juancarlos@usac.edu",
+  "password": "nuevapassword123"
+}
+```
+
+---
+
+#### GET `/users/me/courses`
+Ver mis cursos aprobados con total de créditos.
+
+**Respuesta exitosa (200):**
+```json
+{
+  "usuario": "Juan Pérez",
+  "totalCreditos": 15,
+  "cursos": [
+    { "id": 1, "nombre": "Matemática 1", "creditos": 5 },
+    { "id": 2, "nombre": "Física 1", "creditos": 5 },
+    { "id": 3, "nombre": "Programación 1", "creditos": 5 }
+  ]
+}
+```
+
+---
+
+#### POST `/users/me/courses/:courseId`
+Agregar un curso aprobado a mi perfil.
+
+**Ejemplo:** `POST /users/me/courses/1`
+
+---
+
+#### DELETE `/users/me/courses/:courseId`
+Eliminar un curso aprobado de mi perfil.
+
+**Ejemplo:** `DELETE /users/me/courses/1`
+
+---
+
+#### GET `/users/:registroAcademico`
+Ver el perfil de otro usuario.
+
+**Ejemplo:** `GET /users/202012345`
+
+---
+
+#### GET `/users/:registroAcademico/courses`
+Ver los cursos aprobados de otro usuario.
+
+**Ejemplo:** `GET /users/202012345/courses`
+
+---
+
+### Publicaciones
+
+> Todos los endpoints de publicaciones requieren estar autenticado.
+
+#### GET `/posts`
+Obtener todas las publicaciones ordenadas de más reciente a más antigua. Acepta filtros opcionales por query params.
+
+| Query param | Descripción | Ejemplo |
+|-------------|-------------|---------|
+| `courseId` | Filtrar por ID de curso | `?courseId=1` |
+| `professorId` | Filtrar por ID de catedrático | `?professorId=2` |
+| `courseName` | Buscar por nombre de curso | `?courseName=matematica` |
+| `professorName` | Buscar por nombre de catedrático | `?professorName=juan` |
+
+**Ejemplos:**
+```
+GET /posts
+GET /posts?courseId=1
+GET /posts?professorName=garcia
+GET /posts?courseName=fisica
+```
+
+**Respuesta exitosa (200):**
+```json
+[
+  {
+    "id": 1,
+    "mensaje": "Este curso está muy bueno",
+    "createdAt": "2024-01-15T10:30:00.000Z",
+    "user": {
+      "id": 1,
+      "nombres": "Juan",
+      "apellidos": "Pérez",
+      "registroAcademico": "202012345"
+    },
+    "course": {
+      "id": 1,
+      "nombre": "Matemática 1"
+    },
+    "professor": null,
+    "comments": [
+      {
+        "id": 1,
+        "mensaje": "Totalmente de acuerdo",
+        "createdAt": "2024-01-15T11:00:00.000Z",
+        "user": {
+          "id": 2,
+          "nombres": "María",
+          "apellidos": "García",
+          "registroAcademico": "202054321"
+        }
+      }
+    ]
+  }
+]
+```
+
+---
+
+#### GET `/posts/:id`
+Ver una publicación específica con sus comentarios.
+
+**Ejemplo:** `GET /posts/1`
+
+---
+
+#### POST `/posts`
+Crear una publicación. Debe incluir **solo uno** de los dos: `courseId` o `professorId`.
+
+**Body (publicación sobre un curso):**
+```json
+{
+  "mensaje": "Este curso está muy bien explicado",
+  "courseId": 1
+}
+```
+
+**Body (publicación sobre un catedrático):**
+```json
+{
+  "mensaje": "El catedrático explica muy bien",
+  "professorId": 2
+}
+```
+
+---
+
+### Comentarios
+
+> Requieren estar autenticado.
+
+#### POST `/posts/:postId/comments`
+Agregar un comentario a una publicación.
+
+**Ejemplo:** `POST /posts/1/comments`
+
+**Body:**
+```json
+{
+  "mensaje": "Estoy de acuerdo con esta publicación"
+}
+```
+
+---
+
+### Cursos
+
+> Requieren estar autenticado.
+
+#### GET `/courses`
+Listar todos los cursos ordenados alfabéticamente.
+
+**Respuesta exitosa (200):**
+```json
+[
+  { "id": 1, "nombre": "Física 1", "creditos": 5 },
+  { "id": 2, "nombre": "Matemática 1", "creditos": 5 }
+]
+```
+
+---
+
+#### GET `/courses/:id`
+Ver un curso con todas sus publicaciones.
+
+---
+
+#### POST `/courses`
+Crear un curso.
+
+**Body:**
+```json
+{
+  "nombre": "Matemática 1",
+  "creditos": 5
+}
+```
+
+---
+
+#### PUT `/courses/:id`
+Editar un curso.
+
+**Body:**
+```json
+{
+  "nombre": "Matemática Básica",
+  "creditos": 6
+}
+```
+
+---
+
+#### DELETE `/courses/:id`
+Eliminar un curso.
+
+---
+
+### Catedráticos
+
+> Requieren estar autenticado.
+
+#### GET `/professors`
+Listar todos los catedráticos ordenados por apellido.
+
+**Respuesta exitosa (200):**
+```json
+[
+  { "id": 1, "nombres": "Carlos", "apellidos": "García" },
+  { "id": 2, "nombres": "María", "apellidos": "López" }
+]
+```
+
+---
+
+#### GET `/professors/:id`
+Ver un catedrático con todas sus publicaciones.
+
+---
+
+#### POST `/professors`
+Crear un catedrático.
+
+**Body:**
+```json
+{
+  "nombres": "Carlos",
+  "apellidos": "García"
+}
+```
+
+---
+
+#### PUT `/professors/:id`
+Editar un catedrático.
+
+---
+
+#### DELETE `/professors/:id`
+Eliminar un catedrático.
+
+---
+
+## Manejo de errores
+
+El backend devuelve errores en este formato:
+
+```json
+{
+  "statusCode": 400,
+  "message": "El correo o registro académico ya está en uso",
+  "error": "Bad Request"
+}
+```
+
+| Código | Significado | Qué hacer en el frontend |
+|--------|-------------|--------------------------|
+| `400` | Datos inválidos o faltantes | Mostrar el mensaje de error al usuario |
+| `401` | No autenticado o token expirado | Llamar a `/auth/refresh` o redirigir al login |
+| `403` | Sin permisos | Mostrar mensaje de acceso denegado |
+| `404` | Recurso no encontrado | Mostrar mensaje de no encontrado |
+| `500` | Error del servidor | Mostrar mensaje genérico de error |
+
+### Errores de validación (400)
+
+Cuando se mandan datos incorrectos, el mensaje puede ser un array:
+
+```json
+{
+  "statusCode": 400,
+  "message": [
+    "El correo no es válido",
+    "La contraseña debe tener mínimo 8 caracteres"
+  ],
+  "error": "Bad Request"
+}
+```
+
+---
+
+## Estructura del proyecto
+
+```
+src/
+├── auth/
+│   ├── dto/
+│   │   ├── register.dto.ts
+│   │   ├── login.dto.ts
+│   │   └── reset-password.dto.ts
+│   ├── auth.module.ts
+│   ├── auth.service.ts
+│   ├── auth.controller.ts
+│   ├── jwt.strategy.ts
+│   ├── jwt-refresh.strategy.ts
+│   ├── jwt-auth.guard.ts
+│   └── jwt-refresh.guard.ts
+├── users/
+│   ├── dto/
+│   │   └── update-user.dto.ts
+│   ├── users.module.ts
+│   ├── users.service.ts
+│   └── users.controller.ts
+├── posts/
+│   ├── dto/
+│   │   └── create-post.dto.ts
+│   ├── posts.module.ts
+│   ├── posts.service.ts
+│   └── posts.controller.ts
+├── comments/
+│   ├── dto/
+│   │   └── create-comment.dto.ts
+│   ├── comments.module.ts
+│   ├── comments.service.ts
+│   └── comments.controller.ts
+├── courses/
+│   ├── dto/
+│   │   ├── create-course.dto.ts
+│   │   └── update-course.dto.ts
+│   ├── courses.module.ts
+│   ├── courses.service.ts
+│   └── courses.controller.ts
+├── professors/
+│   ├── dto/
+│   │   ├── create-professor.dto.ts
+│   │   └── update-professor.dto.ts
+│   ├── professors.module.ts
+│   ├── professors.service.ts
+│   └── professors.controller.ts
+└── prisma/
+    ├── prisma.module.ts
+    └── prisma.service.ts
+```
+
+---
+
+## Variables de entorno
+
+Crea un archivo `.env` en la raíz del proyecto:
+
+```env
+# Base de datos
+DATABASE_URL="mysql://admin:admin1234@localhost:3306/usac_db"
+
+# JWT
+JWT_SECRET=un_secreto_muy_seguro_aqui
+JWT_REFRESH_SECRET=otro_secreto_muy_seguro_aqui
+
+# App
+FRONTEND_URL=http://localhost:6000
+NODE_ENV=development
+```
