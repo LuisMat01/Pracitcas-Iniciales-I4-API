@@ -128,7 +128,7 @@ api.interceptors.response.use(
       }
     }
     return Promise.reject(error);
-  }
+  },
 );
 ```
 
@@ -139,9 +139,11 @@ api.interceptors.response.use(
 ### Autenticación
 
 #### POST `/auth/register`
+
 Registrar un nuevo usuario.
 
 **Body:**
+
 ```json
 {
   "registroAcademico": "202012345",
@@ -153,6 +155,7 @@ Registrar un nuevo usuario.
 ```
 
 **Respuesta exitosa (200):**
+
 ```json
 { "message": "Autenticación exitosa" }
 ```
@@ -160,9 +163,11 @@ Registrar un nuevo usuario.
 ---
 
 #### POST `/auth/login`
+
 Iniciar sesión.
 
 **Body:**
+
 ```json
 {
   "email": "juan@usac.edu",
@@ -171,6 +176,7 @@ Iniciar sesión.
 ```
 
 **Respuesta exitosa (200):**
+
 ```json
 { "message": "Autenticación exitosa" }
 ```
@@ -178,11 +184,13 @@ Iniciar sesión.
 ---
 
 #### POST `/auth/logout`
+
 Cerrar sesión. Requiere estar autenticado.
 
 **Body:** ninguno
 
 **Respuesta exitosa (200):**
+
 ```json
 { "message": "Sesión cerrada correctamente" }
 ```
@@ -190,11 +198,13 @@ Cerrar sesión. Requiere estar autenticado.
 ---
 
 #### POST `/auth/refresh`
+
 Renovar el accessToken cuando expira.
 
 **Body:** ninguno
 
 **Respuesta exitosa (200):**
+
 ```json
 { "message": "Autenticación exitosa" }
 ```
@@ -202,9 +212,11 @@ Renovar el accessToken cuando expira.
 ---
 
 #### POST `/auth/reset-password`
+
 Restablecer contraseña olvidada.
 
 **Body:**
+
 ```json
 {
   "registroAcademico": "202012345",
@@ -214,6 +226,7 @@ Restablecer contraseña olvidada.
 ```
 
 **Respuesta exitosa (200):**
+
 ```json
 { "message": "Contraseña actualizada correctamente" }
 ```
@@ -225,9 +238,11 @@ Restablecer contraseña olvidada.
 > Todos los endpoints de usuarios requieren estar autenticado.
 
 #### GET `/users/me`
+
 Ver mi perfil.
 
 **Respuesta exitosa (200):**
+
 ```json
 {
   "id": 1,
@@ -251,9 +266,11 @@ Ver mi perfil.
 ---
 
 #### PUT `/users/me`
+
 Editar mi perfil. Todos los campos son opcionales. No se puede cambiar el `registroAcademico`.
 
 **Body:**
+
 ```json
 {
   "nombres": "Juan Carlos",
@@ -266,9 +283,11 @@ Editar mi perfil. Todos los campos son opcionales. No se puede cambiar el `regis
 ---
 
 #### GET `/users/me/courses`
+
 Ver mis cursos aprobados con total de créditos.
 
 **Respuesta exitosa (200):**
+
 ```json
 {
   "usuario": "Juan Pérez",
@@ -284,6 +303,7 @@ Ver mis cursos aprobados con total de créditos.
 ---
 
 #### POST `/users/me/courses/:courseId`
+
 Agregar un curso aprobado a mi perfil.
 
 **Ejemplo:** `POST /users/me/courses/1`
@@ -291,6 +311,7 @@ Agregar un curso aprobado a mi perfil.
 ---
 
 #### DELETE `/users/me/courses/:courseId`
+
 Eliminar un curso aprobado de mi perfil.
 
 **Ejemplo:** `DELETE /users/me/courses/1`
@@ -298,6 +319,7 @@ Eliminar un curso aprobado de mi perfil.
 ---
 
 #### GET `/users/:registroAcademico`
+
 Ver el perfil de otro usuario.
 
 **Ejemplo:** `GET /users/202012345`
@@ -305,6 +327,7 @@ Ver el perfil de otro usuario.
 ---
 
 #### GET `/users/:registroAcademico/courses`
+
 Ver los cursos aprobados de otro usuario.
 
 **Ejemplo:** `GET /users/202012345/courses`
@@ -316,16 +339,18 @@ Ver los cursos aprobados de otro usuario.
 > Todos los endpoints de publicaciones requieren estar autenticado.
 
 #### GET `/posts`
+
 Obtener todas las publicaciones ordenadas de más reciente a más antigua. Acepta filtros opcionales por query params.
 
-| Query param | Descripción | Ejemplo |
-|-------------|-------------|---------|
-| `courseId` | Filtrar por ID de curso | `?courseId=1` |
-| `professorId` | Filtrar por ID de catedrático | `?professorId=2` |
-| `courseName` | Buscar por nombre de curso | `?courseName=matematica` |
-| `professorName` | Buscar por nombre de catedrático | `?professorName=juan` |
+| Query param     | Descripción                      | Ejemplo                  |
+| --------------- | -------------------------------- | ------------------------ |
+| `courseId`      | Filtrar por ID de curso          | `?courseId=1`            |
+| `professorId`   | Filtrar por ID de catedrático    | `?professorId=2`         |
+| `courseName`    | Buscar por nombre de curso       | `?courseName=matematica` |
+| `professorName` | Buscar por nombre de catedrático | `?professorName=juan`    |
 
 **Ejemplos:**
+
 ```
 GET /posts
 GET /posts?courseId=1
@@ -334,6 +359,7 @@ GET /posts?courseName=fisica
 ```
 
 **Respuesta exitosa (200):**
+
 ```json
 [
   {
@@ -371,6 +397,7 @@ GET /posts?courseName=fisica
 ---
 
 #### GET `/posts/:id`
+
 Ver una publicación específica con sus comentarios.
 
 **Ejemplo:** `GET /posts/1`
@@ -378,9 +405,11 @@ Ver una publicación específica con sus comentarios.
 ---
 
 #### POST `/posts`
+
 Crear una publicación. Debe incluir **solo uno** de los dos: `courseId` o `professorId`.
 
 **Body (publicación sobre un curso):**
+
 ```json
 {
   "mensaje": "Este curso está muy bien explicado",
@@ -389,6 +418,7 @@ Crear una publicación. Debe incluir **solo uno** de los dos: `courseId` o `prof
 ```
 
 **Body (publicación sobre un catedrático):**
+
 ```json
 {
   "mensaje": "El catedrático explica muy bien",
@@ -403,11 +433,13 @@ Crear una publicación. Debe incluir **solo uno** de los dos: `courseId` o `prof
 > Requieren estar autenticado.
 
 #### POST `/posts/:postId/comments`
+
 Agregar un comentario a una publicación.
 
 **Ejemplo:** `POST /posts/1/comments`
 
 **Body:**
+
 ```json
 {
   "mensaje": "Estoy de acuerdo con esta publicación"
@@ -421,9 +453,11 @@ Agregar un comentario a una publicación.
 > Requieren estar autenticado.
 
 #### GET `/courses`
+
 Listar todos los cursos ordenados alfabéticamente.
 
 **Respuesta exitosa (200):**
+
 ```json
 [
   { "id": 1, "nombre": "Física 1", "creditos": 5 },
@@ -434,14 +468,17 @@ Listar todos los cursos ordenados alfabéticamente.
 ---
 
 #### GET `/courses/:id`
+
 Ver un curso con todas sus publicaciones.
 
 ---
 
 #### POST `/courses`
+
 Crear un curso.
 
 **Body:**
+
 ```json
 {
   "nombre": "Matemática 1",
@@ -452,9 +489,11 @@ Crear un curso.
 ---
 
 #### PUT `/courses/:id`
+
 Editar un curso.
 
 **Body:**
+
 ```json
 {
   "nombre": "Matemática Básica",
@@ -465,6 +504,7 @@ Editar un curso.
 ---
 
 #### DELETE `/courses/:id`
+
 Eliminar un curso.
 
 ---
@@ -474,9 +514,11 @@ Eliminar un curso.
 > Requieren estar autenticado.
 
 #### GET `/professors`
+
 Listar todos los catedráticos ordenados por apellido.
 
 **Respuesta exitosa (200):**
+
 ```json
 [
   { "id": 1, "nombres": "Carlos", "apellidos": "García" },
@@ -487,14 +529,17 @@ Listar todos los catedráticos ordenados por apellido.
 ---
 
 #### GET `/professors/:id`
+
 Ver un catedrático con todas sus publicaciones.
 
 ---
 
 #### POST `/professors`
+
 Crear un catedrático.
 
 **Body:**
+
 ```json
 {
   "nombres": "Carlos",
@@ -505,11 +550,13 @@ Crear un catedrático.
 ---
 
 #### PUT `/professors/:id`
+
 Editar un catedrático.
 
 ---
 
 #### DELETE `/professors/:id`
+
 Eliminar un catedrático.
 
 ---
@@ -526,13 +573,13 @@ El backend devuelve errores en este formato:
 }
 ```
 
-| Código | Significado | Qué hacer en el frontend |
-|--------|-------------|--------------------------|
-| `400` | Datos inválidos o faltantes | Mostrar el mensaje de error al usuario |
-| `401` | No autenticado o token expirado | Llamar a `/auth/refresh` o redirigir al login |
-| `403` | Sin permisos | Mostrar mensaje de acceso denegado |
-| `404` | Recurso no encontrado | Mostrar mensaje de no encontrado |
-| `500` | Error del servidor | Mostrar mensaje genérico de error |
+| Código | Significado                     | Qué hacer en el frontend                      |
+| ------ | ------------------------------- | --------------------------------------------- |
+| `400`  | Datos inválidos o faltantes     | Mostrar el mensaje de error al usuario        |
+| `401`  | No autenticado o token expirado | Llamar a `/auth/refresh` o redirigir al login |
+| `403`  | Sin permisos                    | Mostrar mensaje de acceso denegado            |
+| `404`  | Recurso no encontrado           | Mostrar mensaje de no encontrado              |
+| `500`  | Error del servidor              | Mostrar mensaje genérico de error             |
 
 ### Errores de validación (400)
 
@@ -546,6 +593,115 @@ Cuando se mandan datos incorrectos, el mensaje puede ser un array:
     "La contraseña debe tener mínimo 8 caracteres"
   ],
   "error": "Bad Request"
+}
+```
+
+---
+
+## Cómo probar los endpoints
+
+### Postman
+
+1. Haz `POST http://localhost:3000/auth/login` con el body:
+
+```json
+{
+  "email": "juan@usac.edu",
+  "password": "mipassword123"
+}
+```
+
+2. Las cookies se guardan automáticamente en la pestaña **Cookies**
+3. Ya puedes llamar cualquier ruta protegida sin hacer nada extra
+
+Asegúrate de tener habilitado:
+
+```
+Settings → General → Automatically follow redirects ✅
+```
+
+---
+
+### Thunder Client (VS Code)
+
+El flujo es exactamente igual a Postman. Verifica que esté habilitado:
+
+```
+Menú de Thunder Client → Settings →
+✅ Follow Redirects
+✅ Save Cookies
+```
+
+---
+
+### Orden recomendado para probar
+
+Antes de probar rutas protegidas necesitas datos en la base de datos. Sigue este orden:
+
+**1. Registrar un usuario:**
+
+```
+POST /auth/register
+```
+
+```json
+{
+  "registroAcademico": "202012345",
+  "nombres": "Juan",
+  "apellidos": "Pérez",
+  "email": "juan@usac.edu",
+  "password": "mipassword123"
+}
+```
+
+**2. Crear un curso:**
+
+```
+POST /courses
+```
+
+```json
+{
+  "nombre": "Matemática 1",
+  "creditos": 5
+}
+```
+
+**3. Crear un catedrático:**
+
+```
+POST /professors
+```
+
+```json
+{
+  "nombres": "Carlos",
+  "apellidos": "García"
+}
+```
+
+**4. Crear una publicación:**
+
+```
+POST /posts
+```
+
+```json
+{
+  "mensaje": "Este curso está muy bueno",
+  "courseId": 1
+}
+```
+
+**5. Comentar la publicación:**
+
+```
+POST /posts/1/comments
+```
+
+```json
+{
+  "mensaje": "Totalmente de acuerdo"
 }
 ```
 
