@@ -11,18 +11,52 @@ Backend desarrollado con **NestJS + Prisma + MySQL**. Documentación para el equ
 
 ## Levantar el proyecto
 
-```bash
-# 1. Levantar la base de datos
-docker-compose up -d
+### Primera vez
 
-# 2. Instalar dependencias
+```bash
+# 1. Instalar dependencias
 npm install
 
-# 3. Correr migraciones
-npx prisma migrate dev
+# 2. Levantar la base de datos
+docker-compose up -d
 
-# 4. Iniciar el servidor
+# 3. Aplicar el schema a la base de datos (crea las tablas)
+npx prisma migrate dev --name init
+
+# 4. Generar el cliente de Prisma
+npx prisma generate
+
+# 5. Iniciar el servidor
 npm run start:dev
+```
+
+### Las siguientes veces
+
+```bash
+# Levantar la BD y el servidor
+docker-compose up -d
+npm run start:dev
+```
+
+> ⚠️ Los pasos 3 y 4 solo se repiten cuando hay cambios en el schema de Prisma.
+
+### Comandos útiles de Prisma
+
+```bash
+# Aplicar cambios del schema y crear archivo de migración
+npx prisma migrate dev --name descripcion-del-cambio
+
+# Aplicar schema directo sin archivo de migración (más rápido para desarrollo)
+npx prisma db push
+
+# Regenerar el cliente después de cambios en el schema
+npx prisma generate
+
+# Ver y editar datos en una interfaz visual
+npx prisma studio
+
+# Ver el estado de las migraciones
+npx prisma migrate status
 ```
 
 El servidor corre en: `http://localhost:3000`
@@ -130,115 +164,6 @@ api.interceptors.response.use(
     return Promise.reject(error);
   },
 );
-```
-
----
-
-## Cómo probar los endpoints
-
-### Postman
-
-1. Haz `POST http://localhost:3000/auth/login` con el body:
-
-```json
-{
-  "email": "juan@usac.edu",
-  "password": "mipassword123"
-}
-```
-
-2. Las cookies se guardan automáticamente en la pestaña **Cookies**
-3. Ya puedes llamar cualquier ruta protegida sin hacer nada extra
-
-Asegúrate de tener habilitado:
-
-```
-Settings → General → Automatically follow redirects ✅
-```
-
----
-
-### Thunder Client (VS Code)
-
-El flujo es exactamente igual a Postman. Verifica que esté habilitado:
-
-```
-Menú de Thunder Client → Settings →
-✅ Follow Redirects
-✅ Save Cookies
-```
-
----
-
-### Orden recomendado para probar
-
-Antes de probar rutas protegidas necesitas datos en la base de datos. Sigue este orden:
-
-**1. Registrar un usuario:**
-
-```
-POST /auth/register
-```
-
-```json
-{
-  "registroAcademico": "202012345",
-  "nombres": "Juan",
-  "apellidos": "Pérez",
-  "email": "juan@usac.edu",
-  "password": "mipassword123"
-}
-```
-
-**2. Crear un curso:**
-
-```
-POST /courses
-```
-
-```json
-{
-  "nombre": "Matemática 1",
-  "creditos": 5
-}
-```
-
-**3. Crear un catedrático:**
-
-```
-POST /professors
-```
-
-```json
-{
-  "nombres": "Carlos",
-  "apellidos": "García"
-}
-```
-
-**4. Crear una publicación:**
-
-```
-POST /posts
-```
-
-```json
-{
-  "mensaje": "Este curso está muy bueno",
-  "courseId": 1
-}
-```
-
-**5. Comentar la publicación:**
-
-```
-POST /posts/1/comments
-```
-
-```json
-{
-  "mensaje": "Totalmente de acuerdo"
-}
 ```
 
 ---
@@ -707,6 +632,115 @@ Cuando se mandan datos incorrectos, el mensaje puede ser un array:
 
 ---
 
+## Cómo probar los endpoints
+
+### Postman
+
+1. Haz `POST http://localhost:3000/auth/login` con el body:
+
+```json
+{
+  "email": "juan@usac.edu",
+  "password": "mipassword123"
+}
+```
+
+2. Las cookies se guardan automáticamente en la pestaña **Cookies**
+3. Ya puedes llamar cualquier ruta protegida sin hacer nada extra
+
+Asegúrate de tener habilitado:
+
+```
+Settings → General → Automatically follow redirects ✅
+```
+
+---
+
+### Thunder Client (VS Code)
+
+El flujo es exactamente igual a Postman. Verifica que esté habilitado:
+
+```
+Menú de Thunder Client → Settings →
+✅ Follow Redirects
+✅ Save Cookies
+```
+
+---
+
+### Orden recomendado para probar
+
+Antes de probar rutas protegidas necesitas datos en la base de datos. Sigue este orden:
+
+**1. Registrar un usuario:**
+
+```
+POST /auth/register
+```
+
+```json
+{
+  "registroAcademico": "202012345",
+  "nombres": "Juan",
+  "apellidos": "Pérez",
+  "email": "juan@usac.edu",
+  "password": "mipassword123"
+}
+```
+
+**2. Crear un curso:**
+
+```
+POST /courses
+```
+
+```json
+{
+  "nombre": "Matemática 1",
+  "creditos": 5
+}
+```
+
+**3. Crear un catedrático:**
+
+```
+POST /professors
+```
+
+```json
+{
+  "nombres": "Carlos",
+  "apellidos": "García"
+}
+```
+
+**4. Crear una publicación:**
+
+```
+POST /posts
+```
+
+```json
+{
+  "mensaje": "Este curso está muy bueno",
+  "courseId": 1
+}
+```
+
+**5. Comentar la publicación:**
+
+```
+POST /posts/1/comments
+```
+
+```json
+{
+  "mensaje": "Totalmente de acuerdo"
+}
+```
+
+---
+
 ## Estructura del proyecto
 
 ```
@@ -767,16 +801,14 @@ src/
 Crea un archivo `.env` en la raíz del proyecto:
 
 ```env
+# Base de datos
 DATABASE_URL="mysql://admin:admin1234@localhost:3306/usac_db"
-DB_HOST=localhost
-DB_PORT=3306
-DB_USER=admin
-DB_PASSWORD=admin1234
-DB_NAME=usac_db
 
+# JWT
 JWT_SECRET=un_secreto_muy_seguro_aqui
 JWT_REFRESH_SECRET=otro_secreto_muy_seguro_aqui
 
+# App
 FRONTEND_URL=http://localhost:6000
 NODE_ENV=development
 ```
