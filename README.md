@@ -13,6 +13,27 @@ Backend desarrollado con **NestJS + Prisma + MySQL**. Documentación para el equ
 
 ### Primera vez
 
+### Variables de entorno
+
+Crea un archivo `.env` en la raíz del proyecto:
+
+```env
+DATABASE_URL="mysql://admin:admin1234@localhost:3306/usac_db"
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=admin
+DB_PASSWORD=admin1234
+DB_NAME=usac_db
+
+JWT_SECRET=un_secreto_muy_seguro_aqui
+JWT_REFRESH_SECRET=otro_secreto_muy_seguro_aqui
+
+FRONTEND_URL=http://localhost:6000
+NODE_ENV=development
+```
+
+---
+
 ```bash
 # 1. Instalar dependencias
 npm install
@@ -792,25 +813,4 @@ src/
 └── prisma/
     ├── prisma.module.ts
     └── prisma.service.ts
-```
-
----
-
-## Variables de entorno
-
-Crea un archivo `.env` en la raíz del proyecto:
-
-```env
-DATABASE_URL="mysql://admin:admin1234@localhost:3306/usac_db"
-DB_HOST=localhost
-DB_PORT=3306
-DB_USER=admin
-DB_PASSWORD=admin1234
-DB_NAME=usac_db
-
-JWT_SECRET=un_secreto_muy_seguro_aqui
-JWT_REFRESH_SECRET=otro_secreto_muy_seguro_aqui
-
-FRONTEND_URL=http://localhost:6000
-NODE_ENV=development
 ```
