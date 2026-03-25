@@ -13,8 +13,6 @@ Backend desarrollado con **NestJS + Prisma + MySQL**. Documentación para el equ
 
 ### Primera vez
 
-### Variables de entorno
-
 Crea un archivo `.env` en la raíz del proyecto:
 
 ```env
@@ -31,8 +29,6 @@ JWT_REFRESH_SECRET=otro_secreto_muy_seguro_aqui
 FRONTEND_URL=http://localhost:6000
 NODE_ENV=development
 ```
-
----
 
 ```bash
 # 1. Instalar dependencias
