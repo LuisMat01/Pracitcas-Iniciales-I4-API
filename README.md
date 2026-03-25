@@ -30,6 +30,8 @@ FRONTEND_URL=http://localhost:6000
 NODE_ENV=development
 ```
 
+Ejecuta los siguientes comandos:
+
 ```bash
 # 1. Instalar dependencias
 npm install
