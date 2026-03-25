@@ -801,14 +801,16 @@ src/
 Crea un archivo `.env` en la raíz del proyecto:
 
 ```env
-# Base de datos
 DATABASE_URL="mysql://admin:admin1234@localhost:3306/usac_db"
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=admin
+DB_PASSWORD=admin1234
+DB_NAME=usac_db
 
-# JWT
 JWT_SECRET=un_secreto_muy_seguro_aqui
 JWT_REFRESH_SECRET=otro_secreto_muy_seguro_aqui
 
-# App
 FRONTEND_URL=http://localhost:6000
 NODE_ENV=development
 ```
