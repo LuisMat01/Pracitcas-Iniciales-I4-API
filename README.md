@@ -57,7 +57,9 @@ docker-compose up -d
 npm run start:dev
 ```
 
-> ⚠️ Los pasos 3 y 4 solo se repiten cuando hay cambios en el schema de Prisma.
+> ⚠️ Los comandos 3 y 4 solo se repiten cuando hay cambios en el schema de Prisma.
+
+---
 
 ### Comandos útiles de Prisma
 
