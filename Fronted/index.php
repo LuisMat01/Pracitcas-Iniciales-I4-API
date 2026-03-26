@@ -1,6 +1,6 @@
 <?php
 session_start();
-require_once "php/config/api.php";
+require_once "config/api.php";
 
 // Si no está autenticado → redirigir al login
 $token = $_SESSION['auth_token'] ?? null;
